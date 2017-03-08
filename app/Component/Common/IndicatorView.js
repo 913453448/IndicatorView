@@ -9,7 +9,7 @@ import {
     View,
     StyleSheet
 }from 'react-native';
-import * as ScreenUtils from './ScreenUtil';
+import * as ScreenUtils from '../../Util/ScreenUtil';
 const INDICATOR_LEFT = 8;
 const INDICATOR_WIDTH = 12;
 export default class IndicatorView extends Component {
@@ -32,30 +32,35 @@ export default class IndicatorView extends Component {
         this.currIndicator = this.props.position;
     }
 
+    renderSecondView(index){
+        let style = [this.props.unselectStyle?this.props.unselectStyle:styles.circle];
+        if (index != 0) {
+            style.push({marginLeft: ScreenUtils.scaleSize(INDICATOR_LEFT)});
+        }
+        style.push({backgroundColor:this.props.unselectColor});
+        return (
+            <View
+                key={index}
+                style={style}
+            />
+        );
+    }
+    renderView(){
+        let views=[];
+        for (var index = 0; index< this.props.count; index++) {
+            views.push(this.renderSecondView(index));
+        }
+        return views;
+    }
+
     render() {
         let self = this;
         let translateX = self._computeOffset();
-        let PAGES=[];
-        for (var index = 0; index< this.props.count; index++) {
-            PAGES.push({index:index})
-        }
         return (
             <View
                 style={styles.indicatorStyle}
             >
-                {PAGES.map((page,index)=>{
-                    let style = [this.props.unselectStyle?this.props.unselectStyle:styles.circle];
-                    if (index != 0) {
-                        style.push({marginLeft: ScreenUtils.scaleSize(INDICATOR_LEFT)});
-                    }
-                    style.push({backgroundColor:this.props.unselectColor});
-                    return (
-                        <View
-                            key={index}
-                            style={style}
-                        />
-                    );
-                })}
+                {this.renderView()}
                 <View
                     ref={(ref)=>this.indicatorBall=ref}
                     style={[
@@ -99,8 +104,8 @@ const styles = StyleSheet.create({
     indicatorStyle: {
         flexDirection: 'row',
         justifyContent: 'center',
-        alignSelf: 'center',
-        padding: ScreenUtils.scaleSize(5)
+        alignItems: 'center',
+        padding: ScreenUtils.scaleSize(5),
     },
     circle: {
         width: ScreenUtils.scaleSize(INDICATOR_WIDTH),
